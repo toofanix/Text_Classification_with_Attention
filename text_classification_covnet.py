@@ -87,19 +87,18 @@ num_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
 x_train = data[:-num_validation_samples]
 y_train = labels[:-num_validation_samples]
 x_valid = data[-num_validation_samples:]
-y_valid = data[-num_validation_samples:]
+y_valid = labels[-num_validation_samples:]
 
 print('Number of samples in train = {}'.format(x_train.shape[0]))
 print('Number of samples in valid = {}'.format(x_valid.shape[0]))
 print('Number of labels in train = {}'.format(y_train.shape[0]))
 print('Number of labels in valid = {}'.format(y_valid.shape[0]))
 
-
 print(
 	'Number of positive samples in train = {}'.format(
 		y_train[:, 1].sum()))
 print('Number of negative samples in the train = {}'.format(
-	 y_train[:, 0].sum()))
+	y_train[:, 0].sum()))
 
 print(
 	'Number of positive samples in valid = {}'.format(
@@ -120,7 +119,37 @@ f.close()
 print('Words in word vector = {}'.format(len(embeddings_index)))
 
 embedding_matrix = np.random.random((len(word_index) + 1, EMBEDDING_DIM))
+for word, i in word_index.items():
+	embedding_vector = embeddings_index.get(word)
+	if embedding_vector is not None:
+		embedding_matrix[i] = embedding_vector
 
 embedding_layer = Embedding(len(word_index) + 1,
 							EMBEDDING_DIM,
-							weights=[embe])
+							weights=[embedding_matrix],
+							input_length=MAX_SEQUENCE_LENGTH,
+							trainable=True)
+
+sequence_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
+embedded_sequences = embedding_layer(sequence_input)
+l_conv1 = Conv1D(128, 5, activation='relu')(embedded_sequences)
+l_pool1 = MaxPooling1D(5)(l_conv1)
+l_conv2 = Conv1D(128, 5, activation='relu')(l_pool1)
+l_pool2 = MaxPooling1D(5)(l_conv2)
+l_conv3 = Conv1D(128, 5, activation='relu')(l_pool2)
+l_pool3 = MaxPooling1D(35)(l_conv3)
+l_flat = Flatten()(l_pool3)
+l_dense = Dense(128, activation='relu')(l_flat)
+preds = Dense(2, activation='softmax')(l_dense)
+
+model = Model(sequence_input, preds)
+
+model.compile(loss='categorical_crossentropy',
+			  optimizer='rmsprop',
+			  metrics=['acc'])
+
+print('Simple model using Convolutional Neural Net :')
+model.summary()
+
+model.fit(x_train, y_train, validation_data=(x_valid, y_valid),
+		  epochs=10, batch_size=128)
