@@ -44,3 +44,27 @@ data_train = pd.read_csv(
 	os.path.join(DIR_PATH, 'data/labeledTrainData.tsv'),
 	sep='\t')
 
+print('Shape of data = {}'.format(data_train.shape))
+
+texts = []
+labels = []
+
+for idx in range(data_train.review.shape[0]):
+	text = BeautifulSoup(data_train.review[idx], "lxml")
+	texts.append(clean_str(text.get_text()))
+	labels.append(data_train.sentiment[idx])
+
+tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
+tokenizer.fit_on_texts(texts)
+sequences = tokenizer.texts_to_sequences(texts)
+
+word_index = tokenizer.word_index
+print('Found {} unique tokens.'.format(len(word_index)))
+
+
+data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
+
+labels = to_categorical(np.asarray(labels))
+
+print('Shape of data tensor = {}'.format(data.shape))
+print('Shape of label tensor = {}'.format((labels.shape)))
