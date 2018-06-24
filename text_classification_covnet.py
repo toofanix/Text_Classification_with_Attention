@@ -40,12 +40,14 @@ def clean_str(string: str) -> str:
 	return string.strip().lower()
 
 
+# Loa the data
 data_train = pd.read_csv(
 	os.path.join(DIR_PATH, 'data/labeledTrainData.tsv'),
 	sep='\t')
 
 print('Shape of data = {}'.format(data_train.shape))
 
+# Collect the texts and the labels
 texts = []
 labels = []
 
@@ -54,6 +56,9 @@ for idx in range(data_train.review.shape[0]):
 	texts.append(clean_str(text.get_text()))
 	labels.append(data_train.sentiment[idx])
 
+# Create a tokenizer
+# First fit to text to create a dictionary
+# Then convert the text to sequences/numbers
 tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
 tokenizer.fit_on_texts(texts)
 sequences = tokenizer.texts_to_sequences(texts)
@@ -61,10 +66,49 @@ sequences = tokenizer.texts_to_sequences(texts)
 word_index = tokenizer.word_index
 print('Found {} unique tokens.'.format(len(word_index)))
 
-
+# Pad the sequence for proper sentence length
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
+# Convert labels to categorical
 labels = to_categorical(np.asarray(labels))
 
 print('Shape of data tensor = {}'.format(data.shape))
 print('Shape of label tensor = {}'.format((labels.shape)))
+
+# Randomize the data
+indices = np.arange(data.shape[0])
+np.random.shuffle(indices)
+data = data[indices]
+labels = labels[indices]
+num_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
+
+x_train = data[:-num_validation_samples]
+y_train = labels[:-num_validation_samples]
+x_valid = data[-num_validation_samples:]
+y_valid = data[-num_validation_samples:]
+
+print('Number of samples in train = {}'.format(x_train.shape[0]))
+print('Number of samples in valid = {}'.format(x_valid.shape[0]))
+
+print(
+	'Number of positive samples in train = {}'.format(y_train.sum()))
+print('Number of negative samples in the train = {}'.format(
+	len(y_train) - y_train.sum()))
+
+print(
+	'Number of positive samples in valid = {}'.format(y_valid.sum()))
+print('Number of negative samples in the valid = {}'.format(
+	len(y_valid) - y_valid.sum()))
+
+# Generate training and test data
+
+
+# # Load the embeddings
+# embeddings_index = {}
+# f = open(os.path.join(DIR_PATH, 'data/glove.6B.100d.txt'))
+# for line in f:
+# 	values = line.split()
+# 	word = values[0]
+# 	coefs = np.asarray(values[1:], dtype='float32')
+# 	embeddings_index[word] = coefs
+# f.close()
