@@ -46,6 +46,8 @@ data_train = pd.read_csv(
 	sep='\t')
 
 print('Shape of data = {}'.format(data_train.shape))
+print("Number of positive and negative samples = {}".format(
+	data_train.sentiment.value_counts()))
 
 # Collect the texts and the labels
 texts = []
@@ -89,26 +91,36 @@ y_valid = data[-num_validation_samples:]
 
 print('Number of samples in train = {}'.format(x_train.shape[0]))
 print('Number of samples in valid = {}'.format(x_valid.shape[0]))
+print('Number of labels in train = {}'.format(y_train.shape[0]))
+print('Number of labels in valid = {}'.format(y_valid.shape[0]))
+
 
 print(
-	'Number of positive samples in train = {}'.format(y_train.sum()))
+	'Number of positive samples in train = {}'.format(
+		y_train[:, 1].sum()))
 print('Number of negative samples in the train = {}'.format(
-	len(y_train) - y_train.sum()))
+	 y_train[:, 0].sum()))
 
 print(
-	'Number of positive samples in valid = {}'.format(y_valid.sum()))
+	'Number of positive samples in valid = {}'.format(
+		y_valid[:, 1].sum()))
 print('Number of negative samples in the valid = {}'.format(
-	len(y_valid) - y_valid.sum()))
+	y_valid[:, 0].sum()))
 
-# Generate training and test data
+# Load the embeddings
+embeddings_index = {}
+f = open(os.path.join(DIR_PATH, 'data/glove.6B.100d.txt'))
+for line in f:
+	values = line.split()
+	word = values[0]
+	coefs = np.asarray(values[1:], dtype='float32')
+	embeddings_index[word] = coefs
+f.close()
 
+print('Words in word vector = {}'.format(len(embeddings_index)))
 
-# # Load the embeddings
-# embeddings_index = {}
-# f = open(os.path.join(DIR_PATH, 'data/glove.6B.100d.txt'))
-# for line in f:
-# 	values = line.split()
-# 	word = values[0]
-# 	coefs = np.asarray(values[1:], dtype='float32')
-# 	embeddings_index[word] = coefs
-# f.close()
+embedding_matrix = np.random.random((len(word_index) + 1, EMBEDDING_DIM))
+
+embedding_layer = Embedding(len(word_index) + 1,
+							EMBEDDING_DIM,
+							weights=[embe])
