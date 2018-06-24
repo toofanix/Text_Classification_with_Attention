@@ -118,14 +118,14 @@ f.close()
 
 print('Words in word vector = {}'.format(len(embeddings_index)))
 
-embedding_matrix = np.random.random((len(word_index) + 1, EMBEDDING_DIM))
+embedding_matrix = np.random.random(
+	(len(word_index) + 1, EMBEDDING_DIM))
 for word, i in word_index.items():
 	embedding_vector = embeddings_index.get(word)
 	if embedding_vector is not None:
 		embedding_matrix[i] = embedding_vector
 
-embedding_layer = Embedding(len(word_index) + 1,
-							EMBEDDING_DIM,
+embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM,
 							weights=[embedding_matrix],
 							input_length=MAX_SEQUENCE_LENGTH,
 							trainable=True)
