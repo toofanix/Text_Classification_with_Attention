@@ -46,8 +46,7 @@ data_train = pd.read_csv(
 	sep='\t')
 
 print('Shape of data = {}'.format(data_train.shape))
-print("Number of positive and negative samples = {}".format(
-	data_train.sentiment.value_counts()))
+print("Number of positive and negative samples = {}".format(data_train.sentiment.value_counts()))
 
 # Collect the texts and the labels
 texts = []
@@ -94,17 +93,11 @@ print('Number of samples in valid = {}'.format(x_valid.shape[0]))
 print('Number of labels in train = {}'.format(y_train.shape[0]))
 print('Number of labels in valid = {}'.format(y_valid.shape[0]))
 
-print(
-	'Number of positive samples in train = {}'.format(
-		y_train[:, 1].sum()))
-print('Number of negative samples in the train = {}'.format(
-	y_train[:, 0].sum()))
+print('Number of positive samples in train = {}'.format(y_train[:, 1].sum()))
+print('Number of negative samples in the train = {}'.format(y_train[:, 0].sum()))
 
-print(
-	'Number of positive samples in valid = {}'.format(
-		y_valid[:, 1].sum()))
-print('Number of negative samples in the valid = {}'.format(
-	y_valid[:, 0].sum()))
+print('Number of positive samples in valid = {}'.format(y_valid[:, 1].sum()))
+print('Number of negative samples in the valid = {}'.format(y_valid[:, 0].sum()))
 
 # Load the embeddings
 embeddings_index = {}
@@ -125,10 +118,8 @@ for word, i in word_index.items():
 	if embedding_vector is not None:
 		embedding_matrix[i] = embedding_vector
 
-embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM,
-							weights=[embedding_matrix],
-							input_length=MAX_SEQUENCE_LENGTH,
-							trainable=True)
+embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
+							input_length=MAX_SEQUENCE_LENGTH, trainable=True)
 
 sequence_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
 embedded_sequences = embedding_layer(sequence_input)
@@ -144,12 +135,9 @@ preds = Dense(2, activation='softmax')(l_dense)
 
 model = Model(sequence_input, preds)
 
-model.compile(loss='categorical_crossentropy',
-			  optimizer='rmsprop',
-			  metrics=['acc'])
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
 
 print('Simple model using Convolutional Neural Net :')
 model.summary()
 
-model.fit(x_train, y_train, validation_data=(x_valid, y_valid),
-		  epochs=10, batch_size=128)
+model.fit(x_train, y_train, validation_data=(x_valid, y_valid), epochs=10, batch_size=128)
