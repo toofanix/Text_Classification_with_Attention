@@ -10,6 +10,8 @@ import os
 
 os.environ['KERAS_BACKEND'] = 'tensorflow'
 
+DIR_PATH = os.getcwd()
+
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils.np_utils import to_categorical
@@ -24,6 +26,7 @@ MAX_NB_WORDS = 20000
 EMBEDDING_DIM = 100
 VALIDATION_SPLIT = 0.2
 
+
 def clean_str(string: str) -> str:
 	'''
 	Tokenization/string cleaning for dataset
@@ -35,4 +38,9 @@ def clean_str(string: str) -> str:
 	string = re.sub(r"\'", "", string)
 	string = re.sub(r"\"", "", string)
 	return string.strip().lower()
+
+
+data_train = pd.read_csv(
+	os.path.join(DIR_PATH, 'data/labeledTrainData.tsv'),
+	sep='\t')
 
