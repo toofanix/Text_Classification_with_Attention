@@ -40,7 +40,7 @@ def clean_str(string: str) -> str:
 	return string.strip().lower()
 
 
-# Loa the data
+# Load the data
 data_train = pd.read_csv(
 	os.path.join(DIR_PATH, 'data/labeledTrainData.tsv'),
 	sep='\t')
