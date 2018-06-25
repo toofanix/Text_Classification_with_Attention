@@ -82,6 +82,35 @@ for i, sentences in enumerate(reviews):
 					k = k + 1
 
 
+word_index = tokenizer.word_index
+print('Total unique tokens = {}'.format(len(word_index)))
+
+labels = to_categorical(np.asarray(labels))
+print('Shape of data tensor = {}'.format(data.shape))
+print('Shape of label tesnor = {}'.format(labels.shape))
+
+# Randomize the data
+indices = np.arange(data.shape[0])
+np.random.shuffle(indices)
+data = data[indices]
+labels = labels[indices]
+num_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
+
+x_train = data[:-num_validation_samples]
+y_train = labels[:-num_validation_samples]
+x_valid = data[-num_validation_samples:]
+y_valid = labels[-num_validation_samples:]
+
+print('Number of samples in train = {}'.format(x_train.shape[0]))
+print('Number of samples in valid = {}'.format(x_valid.shape[0]))
+print('Number of labels in train = {}'.format(y_train.shape[0]))
+print('Number of labels in valid = {}'.format(y_valid.shape[0]))
+
+print('Number of positive samples in train = {}'.format(y_train[:, 1].sum()))
+print('Number of negative samples in the train = {}'.format(y_train[:, 0].sum()))
+
+print('Number of positive samples in valid = {}'.format(y_valid[:, 1].sum()))
+print('Number of negative samples in the valid = {}'.format(y_valid[:, 0].sum()))
 
 
 
