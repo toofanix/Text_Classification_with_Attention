@@ -53,6 +53,17 @@ data_train = pd.read_csv(
 print('Shape of data = {}'.format(data_train.shape))
 print("Number of positive and negative samples = {}".format(data_train.sentiment.value_counts()))
 
+reviews = []
+labels = []
+texts = []
+
+for idx in range(data_train.review.shape[0]):
+	text = BeautifulSoup(data_train.review[idx], "lxml")
+	text = clean_str(text.get_text())
+	texts.append(text)
+	sentences = tokenize.sent_tokenize(text)
+	reviews.append(sentences)
+	labels.append(data_train.sentiment[idx])
 
 
 
