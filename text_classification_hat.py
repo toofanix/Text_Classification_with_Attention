@@ -12,7 +12,7 @@ os.environ['KERAS_BACKEND'] = 'tensorflow'
 
 DIR_PATH = os.getcwd()
 
-from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils.np_utils import to_categorical
 
@@ -24,6 +24,7 @@ from keras.models import Model
 from keras import backend as K
 from keras.engine.topology import Layer, InputSpec
 from keras import initializers
+
 from nltk import tokenize
 
 MAX_SENT_LENGTH = 100
@@ -64,6 +65,22 @@ for idx in range(data_train.review.shape[0]):
 	sentences = tokenize.sent_tokenize(text)
 	reviews.append(sentences)
 	labels.append(data_train.sentiment[idx])
+
+tokenizer = Tokenizer(num_words=MAX_NUM_WORDS)
+tokenizer.fit_on_texts(texts)
+
+data = np.zeros((len(texts), MAX_SENTS, MAX_SENT_LENGTH), dtype='int32')
+
+for i, sentences in enumerate(reviews):
+	for j, sent in enumerate(sentences):
+		if j < MAX_SENTS:
+			word_tokens = text_to_word_sequence(sent)
+			k = 0
+			for _, word in enumerate(word_tokens):
+				if k < MAX_SENT_LENGTH and tokenizer.word_index[word] < MAX_NUM_WORDS:
+					data[i, j, k] = tokenizer.word_index[word]
+					k = k + 1
+
 
 
 
