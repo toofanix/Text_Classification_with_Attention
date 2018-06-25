@@ -113,5 +113,23 @@ print('Number of positive samples in valid = {}'.format(y_valid[:, 1].sum()))
 print('Number of negative samples in the valid = {}'.format(y_valid[:, 0].sum()))
 
 
+# Load the embeddings
+embeddings_index = {}
+f = open(os.path.join(DIR_PATH, 'data/glove.6B.100d.txt'))
+for line in f:
+	values = line.split()
+	word = values[0]
+	coefs = np.asarray(values[1:], dtype='float32')
+	embeddings_index[word] = coefs
+f.close()
+
+print('Words in word vector = {}'.format(len(embeddings_index)))
+
+embedding_matrix = np.random.random(
+	(len(word_index) + 1, EMBEDDING_DIM))
+for word, i in word_index.items():
+	embedding_vector = embeddings_index.get(word)
+	if embedding_vector is not None:
+		embedding_matrix[i] = embedding_vector
 
 
