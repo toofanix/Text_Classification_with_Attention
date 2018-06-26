@@ -19,6 +19,7 @@ from keras.utils.np_utils import to_categorical
 from keras.layers import Embedding
 from keras.layers import Dense, Input, Flatten
 from keras.layers import Conv1D, MaxPooling1D, Merge, Dropout
+from keras.layers import LSTM, GRU, Bidirectional, TimeDistributed
 from keras.models import Model
 
 from keras import backend as K
@@ -135,4 +136,8 @@ for word, i in word_index.items():
 embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
 							input_length=MAX_SENT_LENGTH, trainable=True)
 
+sentence_input = Input(shape=(MAX_SENT_LENGTH,), dtype='int32')
+embedded_sequences = embedding_layer(sentence_input)
+l_lstm = Bidirectional(LSTM(100))(embedded_sequences)
+sent_encoder = Model(sentence_input, l_lstm)
 
