@@ -34,6 +34,7 @@ MAX_NUM_WORDS = 20000
 EMBEDDING_DIM = 100
 VALIDATION_SPLIT = 0.2
 
+
 def clean_str(string: str) -> str:
 	'''
 	Tokenization/string cleaning for dataset
@@ -82,7 +83,6 @@ for i, sentences in enumerate(reviews):
 					data[i, j, k] = tokenizer.word_index[word]
 					k = k + 1
 
-
 word_index = tokenizer.word_index
 print('Total unique tokens = {}'.format(len(word_index)))
 
@@ -112,7 +112,6 @@ print('Number of negative samples in the train = {}'.format(y_train[:, 0].sum())
 
 print('Number of positive samples in valid = {}'.format(y_valid[:, 1].sum()))
 print('Number of negative samples in the valid = {}'.format(y_valid[:, 0].sum()))
-
 
 # Load the embeddings
 embeddings_index = {}
@@ -147,4 +146,9 @@ l_lstm_sent = Bidirectional(LSTM(100))(review_encoder)
 preds = Dense(2, activation='softmax')(l_lstm_sent)
 model = Model(review_input, preds)
 
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
 
+print('Model Hierachical LSTM')
+print(model.summary())
+
+model.fit(x_train, y_train, validation_data=(x_valid, y_valid), epochs=10, batch_size=50)
