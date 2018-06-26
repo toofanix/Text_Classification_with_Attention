@@ -141,3 +141,10 @@ embedded_sequences = embedding_layer(sentence_input)
 l_lstm = Bidirectional(LSTM(100))(embedded_sequences)
 sent_encoder = Model(sentence_input, l_lstm)
 
+review_input = Input(shape=(MAX_SENTS, MAX_SENT_LENGTH), dtype='int32')
+review_encoder = TimeDistributed(sent_encoder)(review_input)
+l_lstm_sent = Bidirectional(LSTM(100))(review_encoder)
+preds = Dense(2, activation='softmax')(l_lstm_sent)
+model = Model(review_input, preds)
+
+
