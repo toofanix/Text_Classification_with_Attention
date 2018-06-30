@@ -31,3 +31,29 @@ MAX_NUM_WORDS = 20000
 EMBEDDING_DIM = 100
 VALIDATION_SPLIT = 0.2
 
+def clean_str(string: str) -> str:
+	'''
+	Tokenization/string cleaning for dataset
+	Every dataset is lower cased except
+	:param string: String to be tokenized can cleaned
+	:return: tokenized/cleaned string
+	'''
+	string = re.sub(r"\\", "", string)
+	string = re.sub(r"\'", "", string)
+	string = re.sub(r"\"", "", string)
+	return string.strip().lower()
+
+# Load the data
+
+# Load the data
+data_train = pd.read_csv(
+	os.path.join(DIR_PATH, 'data/labeledTrainData.tsv'),
+	sep='\t')
+
+print('Shape of data = {}'.format(data_train.shape))
+print("Number of positive and negative samples = {}".format(data_train.sentiment.value_counts()))
+
+# Collect the texts and the labels
+texts = []
+labels = []
+
