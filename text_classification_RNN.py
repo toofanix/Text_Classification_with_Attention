@@ -31,6 +31,7 @@ MAX_NUM_WORDS = 20000
 EMBEDDING_DIM = 100
 VALIDATION_SPLIT = 0.2
 
+
 def clean_str(string: str) -> str:
 	'''
 	Tokenization/string cleaning for dataset
@@ -42,6 +43,7 @@ def clean_str(string: str) -> str:
 	string = re.sub(r"\'", "", string)
 	string = re.sub(r"\"", "", string)
 	return string.strip().lower()
+
 
 # Load the data
 
@@ -123,7 +125,6 @@ for word, i in word_index.items():
 	if embedding_vector is not None:
 		embedding_matrix[i] = embedding_vector
 
-
 embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
 							input_length=MAX_SEQUENCE_LENGTH, trainable=True)
 
@@ -133,13 +134,13 @@ l_lstm = Bidirectional(LSTM(100))(embedded_sequences)
 preds = Dense(2, activation='softmax')(l_lstm)
 model = Model(sequence_input, preds)
 
-
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
 
 print('Model using RNN :')
 model.summary()
 
 model.fit(x_train, y_train, epochs=20, validation_data=(x_valid, y_valid), batch_size=50)
+
 
 # Attention GRU network
 class AttentionLayer(Layer):
@@ -156,12 +157,12 @@ class AttentionLayer(Layer):
 	def call(self, x, mask=None):
 		eij = K.tanh(K.dot(x, self.W))
 		ai = K.exp(eij)
-		weights = ai/K.sum(ai, axis=1).dimshuffle(0, 'x')
+		weights = ai / K.sum(ai, axis=1).dimshuffle(0, 'x')
 		weighted_input = x * weights.dimshuffle(0, 1, 'x')
 		return weighted_input.sum(axis=1)
 
 	def get_output_shape_for(self, input_shape):
-		return(input_shape[0], input_shape[-1])
+		return (input_shape[0], input_shape[-1])
 
 
 embedding_matrix = np.random.random(
@@ -170,7 +171,6 @@ for word, i in word_index.items():
 	embedding_vector = embeddings_index.get(word)
 	if embedding_vector is not None:
 		embedding_matrix[i] = embedding_vector
-
 
 embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
 							input_length=MAX_SEQUENCE_LENGTH, trainable=True)
@@ -182,7 +182,6 @@ l_att = AttentionLayer()(l_gru)
 preds = Dense(2, activation='softmax')(l_att)
 
 model = Model(sequence_input, preds)
-
 
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
 
