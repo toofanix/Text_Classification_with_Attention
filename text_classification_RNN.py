@@ -57,3 +57,49 @@ print("Number of positive and negative samples = {}".format(data_train.sentiment
 texts = []
 labels = []
 
+for idx in range(data_train.review.shape[0]):
+	text = BeautifulSoup(data_train.review[idx], "lxml")
+	texts.append(clean_str(text.get_text()))
+	labels.append(data_train.sentiment[idx])
+
+# Create a tokenizer
+# First fit to text to create a dictionary
+# Then convert the text to sequences/numbers
+tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
+tokenizer.fit_on_texts(texts)
+sequences = tokenizer.texts_to_sequences(texts)
+
+word_index = tokenizer.word_index
+print('Found {} unique tokens.'.format(len(word_index)))
+
+# Pad the sequence for proper sentence length
+data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
+
+# Convert labels to categorical
+labels = to_categorical(np.asarray(labels))
+
+print('Shape of data tensor = {}'.format(data.shape))
+print('Shape of label tensor = {}'.format((labels.shape)))
+
+# Randomize the data
+indices = np.arange(data.shape[0])
+np.random.shuffle(indices)
+data = data[indices]
+labels = labels[indices]
+num_validation_samples = int(VALIDATION_SPLIT * data.shape[0])
+
+x_train = data[:-num_validation_samples]
+y_train = labels[:-num_validation_samples]
+x_valid = data[-num_validation_samples:]
+y_valid = labels[-num_validation_samples:]
+
+print('Number of samples in train = {}'.format(x_train.shape[0]))
+print('Number of samples in valid = {}'.format(x_valid.shape[0]))
+print('Number of labels in train = {}'.format(y_train.shape[0]))
+print('Number of labels in valid = {}'.format(y_valid.shape[0]))
+
+print('Number of positive samples in train = {}'.format(y_train[:, 1].sum()))
+print('Number of negative samples in the train = {}'.format(y_train[:, 0].sum()))
+
+print('Number of positive samples in valid = {}'.format(y_valid[:, 1].sum()))
+print('Number of negative samples in the valid = {}'.format(y_valid[:, 0].sum()))
