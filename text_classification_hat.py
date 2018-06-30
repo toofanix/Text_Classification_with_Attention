@@ -179,14 +179,13 @@ class Attention_Layer(Layer):
 		eij = K.tanh(K.dot(x, self.W))
 
 		ai = K.exp(eij)
-		weights = ai/ K.sum(ai, axis=1).dimshuffle(0, 'x')
+		weights = ai / K.sum(ai, axis=1).dimshuffle(0, 'x')
 
-		weighted_input = x*weights.dimshuffle(0, 'x')
+		weighted_input = x * weights.dimshuffle(0, 'x')
 		return weighted_input.sum(axis=1)
 
 	def get_output_shape_for(self, input_shape):
 		return (input_shape[0], input_shape[-1])
-
 
 
 sentence_input = Input(shape=(MAX_SENT_LENGTH), dtype='int32')
@@ -204,3 +203,7 @@ l_att_sent = Attention_Layer()(l_dense_sent)
 preds = Dense(2, activation='softmax')(l_att_sent)
 model = Model(review_input, preds)
 
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
+
+print("Hierachial attention network")
+model.fit(x_train, y_train, validation_data=(x_valid, y_valid), epochs=10, batch_size=50)
