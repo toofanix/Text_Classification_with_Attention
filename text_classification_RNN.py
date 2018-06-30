@@ -136,7 +136,7 @@ model = Model(sequence_input, preds)
 
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
 
-print('Model using a complex convolutional neural network :')
+print('Model using RNN :')
 model.summary()
 
 model.fit(x_train, y_train, epochs=20, validation_data=(x_valid, y_valid), batch_size=50)
@@ -180,3 +180,13 @@ embedded_sequences = embedding_layer(sequence_input)
 l_gru = Bidirectional(GRU(100, return_sequences=True))(embedded_sequences)
 l_att = AttentionLayer()(l_gru)
 preds = Dense(2, activation='softmax')(l_att)
+
+model = Model(sequence_input, preds)
+
+
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
+
+print('Model with attention GRU :')
+model.summary()
+
+model.fit(x_train, y_train, epochs=20, validation_data=(x_valid, y_valid), batch_size=50)
