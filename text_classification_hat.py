@@ -162,3 +162,27 @@ for word, i in word_index.items():
 
 embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
 							input_length=MAX_SENT_LENGTH, trainable=True)
+
+
+class Attention_Layer(Layer):
+	def __init__(self, **kwargs):
+		self.init = initializers.get('normal')
+		super(Attention_Layer, self).__init__(**kwargs)
+
+	def build(self, input_shape):
+		assert len(input_shape) == 3
+		self.W = self.init((input_shape[-1],))
+		self.trainable_weights = [self.W]
+		super(Attention_Layer, self).build(input_shape)
+
+	def call(self, x, mask=None):
+		eij = K.tanh(K.dot(x, self.W))
+
+		ai = K.exp(eij)
+		weights = ai/ K.sum(ai, axis=1).dimshuffle(0, 'x')
+
+		weighted_input = x*weights.dimshuffle(0, 'x')
+		return weighted_input.sum(axis=1)
+
+	def get_output_shape_for(self, input_shape):
+		return (input_shape[0], input_shape[-1])
