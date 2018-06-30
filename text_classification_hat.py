@@ -196,3 +196,11 @@ l_dense = TimeDistributed(Dense(200))(l_lstm)
 l_att = Attention_Layer()(l_dense)
 sent_encoder = Model(sentence_input, l_att)
 
+review_input = Input(shape=(MAX_SENTS, MAX_SENT_LENGTH), dtype='int32')
+review_encoder = TimeDistributed(sent_encoder)(review_encoder)
+l_lstm_sent = Bidirectional(GRU(100, return_sequences=True))(review_encoder)
+l_dense_sent = TimeDistributed(Dense(200))(l_lstm_sent)
+l_att_sent = Attention_Layer()(l_dense_sent)
+preds = Dense(2, activation='softmax')(l_att_sent)
+model = Model(review_input, preds)
+
