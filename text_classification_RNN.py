@@ -164,3 +164,19 @@ class AttentionLayer(Layer):
 		return(input_shape[0], input_shape[-1])
 
 
+embedding_matrix = np.random.random(
+	(len(word_index) + 1, EMBEDDING_DIM))
+for word, i in word_index.items():
+	embedding_vector = embeddings_index.get(word)
+	if embedding_vector is not None:
+		embedding_matrix[i] = embedding_vector
+
+
+embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
+							input_length=MAX_SEQUENCE_LENGTH, trainable=True)
+
+sequence_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
+embedded_sequences = embedding_layer(sequence_input)
+l_gru = Bidirectional(GRU(100, return_sequences=True))(embedded_sequences)
+l_att = AttentionLayer()(l_gru)
+preds = Dense(2, activation='softmax')(l_att)
