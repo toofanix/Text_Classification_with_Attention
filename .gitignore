@@ -1,0 +1,10 @@
+# data folder
+data/
+
+# .tsv files
+*.tsv
+
+# os and other files
+.DS_Store
+.idea/
+.mypy_cache
