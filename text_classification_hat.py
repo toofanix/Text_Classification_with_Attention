@@ -186,3 +186,13 @@ class Attention_Layer(Layer):
 
 	def get_output_shape_for(self, input_shape):
 		return (input_shape[0], input_shape[-1])
+
+
+
+sentence_input = Input(shape=(MAX_SENT_LENGTH), dtype='int32')
+embedded_sequences = embedding_layer(sentence_input)
+l_lstm = Bidirectional(GRU(100, return_sequences=True))(embedded_sequences)
+l_dense = TimeDistributed(Dense(200))(l_lstm)
+l_att = Attention_Layer()(l_dense)
+sent_encoder = Model(sentence_input, l_att)
+
