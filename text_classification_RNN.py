@@ -122,3 +122,13 @@ for word, i in word_index.items():
 	embedding_vector = embeddings_index.get(word)
 	if embedding_vector is not None:
 		embedding_matrix[i] = embedding_vector
+
+
+embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
+							input_length=MAX_SEQUENCE_LENGTH, trainable=True)
+
+sequence_input = Input(shape=(MAX_SEQUENCE_LENGTH,), dtype='int32')
+embedded_sequences = embedding_layer(sequence_input)
+l_lstm = Bidirectional(LSTM(100))(embedded_sequences)
+preds = Dense(2, activation='softmax')(l_lstm)
+model = Model(sequence_input, preds)
