@@ -152,3 +152,6 @@ print('Model Hierachical LSTM')
 print(model.summary())
 
 model.fit(x_train, y_train, validation_data=(x_valid, y_valid), epochs=10, batch_size=50)
+
+# Building Hierchial Attention network
+embedding_matrix = np.random.random((len(word_index) + 1, EMBEDDING_DIM))
