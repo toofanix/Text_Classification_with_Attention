@@ -132,3 +132,11 @@ embedded_sequences = embedding_layer(sequence_input)
 l_lstm = Bidirectional(LSTM(100))(embedded_sequences)
 preds = Dense(2, activation='softmax')(l_lstm)
 model = Model(sequence_input, preds)
+
+
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
+
+print('Model using a complex convolutional neural network :')
+model.summary()
+
+model.fit(x_train, y_train, epochs=20, validation_data=(x_valid, y_valid), batch_size=50)
