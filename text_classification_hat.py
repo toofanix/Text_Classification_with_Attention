@@ -155,3 +155,10 @@ model.fit(x_train, y_train, validation_data=(x_valid, y_valid), epochs=10, batch
 
 # Building Hierchial Attention network
 embedding_matrix = np.random.random((len(word_index) + 1, EMBEDDING_DIM))
+for word, i in word_index.items():
+	embedding_vector = embeddings_index.get(word)
+	if embedding_vector is not None:
+		embedding_matrix[i] = embedding_vector
+
+embedding_layer = Embedding(len(word_index) + 1, EMBEDDING_DIM, weights=[embedding_matrix],
+							input_length=MAX_SENT_LENGTH, trainable=True)
